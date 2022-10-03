@@ -20,9 +20,11 @@
 import { createMachine }    from 'xstate'
 import * as Mailbox         from 'mailbox'
 
+import * as WechatyActor    from 'wechaty-actor'
+
 import duckula, { Context, Event } from './duckula.js'
 
-export const datingPitchesMachine = createMachine<Context, Event>(
+const datingPitchesMachine = createMachine<Context, Event>(
   {
     id: duckula.id,
     initial: duckula.State.Idle,
@@ -32,6 +34,7 @@ export const datingPitchesMachine = createMachine<Context, Event>(
           Mailbox.actions.idle(duckula.id),
         ],
         on: {
+          [duckula.Type.MESSAGE]: ]
           [duckula.Type.REPLY]: duckula.State.Matched,
         },
       },
@@ -97,3 +100,5 @@ export const datingPitchesMachine = createMachine<Context, Event>(
     },
   },
 )
+
+export default datingPitchesMachine

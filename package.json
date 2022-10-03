@@ -25,6 +25,7 @@
     "lodash": "^4.17.21",
     "lru-cache": "^7.5.0",
     "mailbox": "^0.10.9",
+    "qrcode-terminal": "^0.12.0",
     "request": "^2.88.2",
     "tencentcloud-sdk-nodejs": "^4.0.306",
     "typed-inject": "^3.0.1",
@@ -32,6 +33,8 @@
     "uuid": "^8.3.2",
     "wechaty-actor": "^0.5.1",
     "wechaty-cqrs": "^0.15.4",
+    "wechaty-puppet-wechat": "^1.18.4",
+    "wechaty-puppet-whatsapp": "^1.19.16",
     "xstate": "4.31.0"
   },
   "devDependencies": {
@@ -41,6 +44,7 @@
     "@chatie/tsconfig": "^4.6.3",
     "@types/lodash": "^4.14.182",
     "@types/lru-cache": "^7.4.0",
+    "@types/qrcode-terminal": "^0.12.0",
     "@types/request": "^2.48.8",
     "@types/uuid": "^8.3.4",
     "@types/ws": "^8.5.3",

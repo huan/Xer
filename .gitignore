@@ -7,5 +7,6 @@ dist
 package-lock.json
 yarn.lock
 
+.wwebjs_auth/
 t/
 t.*

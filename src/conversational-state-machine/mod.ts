@@ -16,8 +16,8 @@
  *   limitations under the License.
  *
  */
-import duckula, { type Context } from './duckula.js'
-import machine from './example.js'
+import duckula, { type Context }  from './duckula.js'
+import machine                    from './machine.js'
 
 export const {
   id,
