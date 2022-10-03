@@ -22,7 +22,7 @@ import { createMachine, actions }   from 'xstate'
 import * as Mailbox                 from 'mailbox'
 import * as PUPPET                  from 'wechaty-puppet'
 
-import { responseStates }     from '../pure-functions/response-states.js'
+import { responseStates }     from '../../pure-functions/response-states.js'
 
 import duckula, { Context, Event, Events }  from './duckula.js'
 

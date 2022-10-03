@@ -32,8 +32,8 @@ import * as CQRS                        from 'wechaty-cqrs'
 import { FileBox }                      from 'file-box'
 import * as WechatyActor                from 'wechaty-actor'
 
-import * as duck            from '../duck/mod.js'
-import { chatbotFixtures }     from '../test-driven-development/chatbot-fixtures.js'
+import * as duck              from '../../duck/mod.js'
+import { chatbotFixtures }    from '../../test-driven-development/chatbot-fixtures.js'
 
 import machine    from './machine.js'
 import duckula    from './duckula.js'

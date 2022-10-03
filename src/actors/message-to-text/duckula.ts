@@ -22,7 +22,7 @@ import * as Mailbox       from 'mailbox'
 import * as CQRS          from 'wechaty-cqrs'
 import type * as PUPPET   from 'wechaty-puppet'
 
-import * as duck    from '../duck/mod.js'
+import * as duck    from '../../duck/mod.js'
 
 export interface Context {
   message?: PUPPET.payloads.Message
