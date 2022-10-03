@@ -32,7 +32,7 @@
     "uuid": "^8.3.2",
     "wechaty-actor": "^0.5.1",
     "wechaty-cqrs": "^0.15.4",
-    "xstate": "^4.31.0"
+    "xstate": "4.31.0"
   },
   "devDependencies": {
     "@chatie/eslint-config": "^1.0.4",
@@ -50,7 +50,7 @@
     "utility-types": "^3.10.0",
     "wechaty": "^1.18.1",
     "wechaty-mocker": "^1.11.3",
-    "wechaty-puppet-mock": "^1.19.3",
+    "wechaty-puppet-mock": "^1.19.4",
     "ws": "^8.5.0"
   },
   "peerDependencies": {
