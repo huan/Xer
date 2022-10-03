@@ -22,21 +22,19 @@ import {
   AnyEventObject,
   interpret,
   createMachine,
-}                                   from 'xstate'
-import { of }                       from 'rxjs'
-import { map, mergeMap, filter }    from 'rxjs/operators'
-import { test, sinon }              from 'tstest'
-import * as Mailbox                 from 'mailbox'
-import * as CQRS                    from 'wechaty-cqrs'
-import { isActionOf }               from 'typesafe-actions'
-import * as WechatyActor            from 'wechaty-actor'
+}                           from 'xstate'
+import { map }              from 'rxjs/operators'
+import { test, sinon }      from 'tstest'
+import * as Mailbox         from 'mailbox'
+import * as CQRS            from 'wechaty-cqrs'
+import { isActionOf }       from 'typesafe-actions'
+import * as WechatyActor    from 'wechaty-actor'
 
-import { dayjs, skipSelfMessagePayload$ }    from '../pure-functions/mod.js'
-import { chatbotFixtures }                   from '../test-driven-development/chatbot-fixtures.js'
+import { skipSelfMessagePayload$ }    from '../pure-functions/mod.js'
+import { chatbotFixtures }            from '../test-driven-development/chatbot-fixtures.js'
 
 import duckula, { Context }   from './duckula.js'
-
-import { datingPitchesMachine }   from './machine.js'
+import datingPitchesMachine   from './machine.js'
 
 test('Calling machine step by step', async t => {
   for await (const {
@@ -48,7 +46,7 @@ test('Calling machine step by step', async t => {
       useFakeTimers: { now: Date.now() },
     })
 
-    wechatyFixture.wechaty.on('message', msg => console.info('DEBUG [Wechaty]', String(msg)))
+    wechatyFixture.wechaty.on('message', msg => console.info('### DEBUG [Wechaty]', String(msg)))
 
     const bus$ = CQRS.from(wechatyFixture.wechaty)
     const wechatyMailbox = WechatyActor.from(bus$, wechatyFixture.wechaty.puppet.id)
@@ -102,21 +100,30 @@ test('Calling machine step by step', async t => {
     /**
      * 1st event
      */
-    testInterpreter.send(duckula.Event.REPLY())
+    const HELLO = 'hello'
+    mockerFixture.player.say(HELLO).to(mockerFixture.bot)
+    // testInterpreter.send(duckula.Event.REPLY())
     await sandbox.clock.tickAsync(1000)
 
-    t.equal(pitchState(), duckula.State.FirstPitched, 'should be State.FirstPitched')
+    t.equal(pitchState(), duckula.State.FirstPitching, 'should be State.FirstPitching')
     t.notOk(pitchContext().startTime, 'should have no startTime')
-    t.notOk(pitchContext().message, 'should have no current message payload in context')
+    t.same(pitchContext().message?.text, HELLO, 'should have saved current message payload to context')
 
     t.same(
       datingPitchesEventList
+        .filter(isActionOf([
+          duckula.Event.MESSAGE,
+          duckula.Event.TEXT,
+          duckula.Event.REPLY,
+        ]))
         .map(e => e.type),
       [
-        'xstate.init',
+        duckula.Type.MESSAGE,
+        duckula.Type.TEXT,
+        duckula.Type.REPLY,
         duckula.Type.REPLY,
       ],
-      'should receive bunch of events after send REPLY',
+      'should receive bunch of events after a message',
     )
 
     /**
@@ -124,19 +131,31 @@ test('Calling machine step by step', async t => {
      */
     datingPitchesEventList.length = 0
 
-    testInterpreter.send(duckula.Event.REPLY())
+    const HELLO_AGAIN = 'hello again'
+    mockerFixture.player.say(HELLO_AGAIN).to(mockerFixture.bot)
+    // testInterpreter.send(duckula.Event.REPLY())
     await sandbox.clock.tickAsync(1000)
 
-    t.equal(pitchState(), duckula.State.SecondPitched, 'should be State.SecondPitched')
+    t.equal(pitchState(), duckula.State.SecondPitching, 'should be State.SecondPitching')
     t.notOk(pitchContext().startTime, 'should have no startTime')
-    t.notOk(pitchContext().message, 'should have no current message payload in context')
+    t.same(pitchContext().message?.text, HELLO_AGAIN, 'should have saved current message payload to context')
 
     t.same(
-      datingPitchesEventList.map(e => e.type),
+      datingPitchesEventList
+        .filter(
+          isActionOf([
+            duckula.Event.MESSAGE,
+            duckula.Event.TEXT,
+            duckula.Event.REPLY,
+          ]),
+        )
+        .map(e => e.type),
       [
+        duckula.Type.MESSAGE,
+        duckula.Type.TEXT,
         duckula.Type.REPLY,
       ],
-      'should receive bunch of events after send REPLY',
+      'should receive bunch of events after send HELLO_AGAIN',
     )
 
     /**
@@ -144,16 +163,28 @@ test('Calling machine step by step', async t => {
      */
     datingPitchesEventList.length = 0
 
-    testInterpreter.send(duckula.Event.REPLY())
+    const HELLO_AGAIN_AGAIN = 'hello again again'
+    mockerFixture.player.say(HELLO_AGAIN_AGAIN).to(mockerFixture.bot)
+    // testInterpreter.send(duckula.Event.REPLY())
     await sandbox.clock.tickAsync(1000)
 
-    t.equal(pitchState(), duckula.State.CoffeeRequested, 'should be State.CoffeeRequested')
+    t.equal(pitchState(), duckula.State.CoffeeRequesting, 'should be State.CoffeeRequesting')
     t.notOk(pitchContext().startTime, 'should have no startTime')
-    t.notOk(pitchContext().message, 'should have no current message payload in context')
+    t.same(pitchContext().message?.text, HELLO_AGAIN_AGAIN, 'should have saved current message payload to context')
 
     t.same(
-      datingPitchesEventList.map(e => e.type),
+      datingPitchesEventList
+        .filter(
+          isActionOf([
+            duckula.Event.MESSAGE,
+            duckula.Event.TEXT,
+            duckula.Event.REPLY,
+          ]),
+        )
+        .map(e => e.type),
       [
+        duckula.Type.MESSAGE,
+        duckula.Type.TEXT,
         duckula.Type.REPLY,
       ],
       'should receive bunch of events after send REPLY',
@@ -164,19 +195,32 @@ test('Calling machine step by step', async t => {
      */
     datingPitchesEventList.length = 0
 
-    testInterpreter.send(duckula.Event.ACCEPT())
+    const LETS_GO = 'let\'s go'
+    mockerFixture.player.say(LETS_GO).to(mockerFixture.bot)
+    // testInterpreter.send(duckula.Event.ACCEPT())
     await sandbox.clock.tickAsync(1000)
 
     t.equal(pitchState(), duckula.State.Success, 'should be State.Success')
     t.notOk(pitchContext().startTime, 'should have no startTime')
-    t.notOk(pitchContext().message, 'should have no current message payload in context')
+    t.same(pitchContext().message?.text, LETS_GO, 'should have saved current message payload to context')
 
     t.same(
-      datingPitchesEventList.map(e => e.type),
+      datingPitchesEventList
+        .filter(
+          isActionOf([
+            duckula.Event.MESSAGE,
+            duckula.Event.TEXT,
+            duckula.Event.REPLY,
+            duckula.Event.ACCEPT,
+          ]),
+        )
+        .map(e => e.type),
       [
+        duckula.Type.MESSAGE,
+        duckula.Type.TEXT,
         duckula.Type.ACCEPT,
       ],
-      'should receive bunch of events after send REPLY',
+      'should receive bunch of events after a message',
     )
 
     sandbox.restore()

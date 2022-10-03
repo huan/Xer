@@ -38,11 +38,11 @@ export const Textualized  = 'sys/Textualized'
 export const Stranger   = 'xer/Stranger'
 export const Matched    = 'xer/Matched'
 
-export const FirstPitched     = 'xer/FirstPitched'
-export const SecondPitched    = 'xer/SecondPitched'
-export const ThirdPitched     = 'xer/ThirdPitched'
+export const FirstPitching     = 'xer/FirstPitching'
+export const SecondPitching    = 'xer/SecondPitching'
+export const ThirdPitching     = 'xer/ThirdPitching'
 
-export const CoffeeRequested  = 'xer/CoffeeRequested'
+export const CoffeeRequesting  = 'xer/CoffeeRequesting'
 
 export const Success  = 'xer/Success'
 export const Failure  = 'xer/Failure'

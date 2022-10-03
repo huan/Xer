@@ -37,7 +37,9 @@ async function main () {
   /**
    * Wechaty Actor
    */
-  const wechaty = WECHATY.WechatyBuilder.build()
+  const wechaty = WECHATY.WechatyBuilder.build({
+    name: 'XerBot',
+  })
   await wechaty.init()
 
   const bus$ = CQRS.from(wechaty)

@@ -17,10 +17,15 @@
  *
  */
 /* eslint-disable sort-keys */
-import { createMachine }    from 'xstate'
+import {
+  actions,
+  createMachine,
+}                           from 'xstate'
 import * as Mailbox         from 'mailbox'
 
-import * as WechatyActor    from 'wechaty-actor'
+import * as CQRS            from 'wechaty-cqrs'
+
+import * as actors from '../actors/mod.js'
 
 import duckula, { Context, Event } from './duckula.js'
 
@@ -28,36 +33,104 @@ const datingPitchesMachine = createMachine<Context, Event>(
   {
     id: duckula.id,
     initial: duckula.State.Idle,
+    /**
+     * Spawn Worker Actors
+     */
+    invoke: [
+      {
+        id: actors.MessageToText.id,
+        src: ctx => Mailbox.wrap(
+          actors.MessageToText.machine.withContext({
+            ...actors.MessageToText.initialContext(),
+            actors: {
+              wechaty: ctx.actors.wechaty,
+            },
+          }),
+        ),
+      },
+    ],
+    on: {
+      [duckula.Type.REPLY]: {
+        actions: [
+          actions.send(
+            (ctx, e) => CQRS.commands.SendMessageCommand(
+              CQRS.uuid.NIL,
+              ctx.message!.talkerId,
+              CQRS.sayables.text(
+                `${e.payload.text}`,
+              ),
+            ),
+            { to: ctx => ctx.actors.wechaty },
+          ),
+        ],
+      },
+    },
     states: {
       [duckula.State.Idle]: {
         entry: [
           Mailbox.actions.idle(duckula.id),
         ],
         on: {
-          [duckula.Type.MESSAGE]: ]
-          [duckula.Type.REPLY]: duckula.State.Matched,
+          [duckula.Type.MESSAGE]: {
+            actions: [
+              actions.assign({
+                message: (_, e) => e.payload.message,
+              }),
+              actions.send(
+                (_, e) => e,
+                { to: actors.MessageToText.id },
+              ),
+            ],
+          },
+          [actors.MessageToText.Type.TEXT]: {
+            actions: [
+              actions.log((_, e) => `Got text from MessageToText: ${e.payload.text}`),
+            ],
+            target: duckula.State.Matched,
+          },
         },
       },
       [duckula.State.Matched]: {
-        // once matched, send out the first pitch immediately, move to firstPitched state
-        always:[ { target: duckula.State.FirstPitched } ],
-        entry: [ 'sendFirstPitch' ],
+        // once matched, send out the first pitch immediately, move to firstPitching state
+        entry: [
+          actions.send(duckula.Event.REPLY('Hi')),
+        ],
+        always: duckula.State.FirstPitching,
       },
-      [duckula.State.FirstPitched]: {
+      [duckula.State.FirstPitching]: {
+        entry: [
+          actions.send(duckula.Event.REPLY('My name is Xer. How are you?')),
+        ],
         // wait for WAITINGTIME
         // if no response, move to failure
-        // otherwise, send the second message and move to secondPitched state
+        // otherwise, send the second message and move to secondPitching state
         after: {
           6000: duckula.State.Failure,
         },
         on: {
-          [duckula.Type.REPLY]: {
-            actions: [ 'sendSecondPitch' ],
-            target: duckula.State.SecondPitched,
+          [duckula.Type.MESSAGE]: {
+            actions: [
+              actions.assign({
+                message: (_, e) => e.payload.message,
+              }),
+              actions.send(
+                (_, e) => e,
+                { to: actors.MessageToText.id },
+              ),
+            ],
+          },
+          [actors.MessageToText.Type.TEXT]: {
+            actions: [
+              actions.log((_, e) => `Got text from MessageToText: ${e.payload.text}`),
+            ],
+            target: duckula.State.SecondPitching,
           },
         },
       },
-      [duckula.State.SecondPitched]: {
+      [duckula.State.SecondPitching]: {
+        entry: [
+          actions.send(duckula.Event.REPLY('How is your day?')),
+        ],
         // wait for WAITINGTIME
         // if no response, move to failure
         // otherwise, send coffee meet request and move to coffeeRequested state
@@ -65,37 +138,73 @@ const datingPitchesMachine = createMachine<Context, Event>(
           6000: duckula.State.Failure,
         },
         on: {
-          [duckula.Type.REPLY]: { target: duckula.State.CoffeeRequested, actions: [ 'requestCoffeeMeet' ] },
+          [duckula.Type.MESSAGE]: {
+            actions: [
+              actions.assign({
+                message: (_, e) => e.payload.message,
+              }),
+              actions.send(
+                (_, e) => e,
+                { to: actors.MessageToText.id },
+              ),
+            ],
+          },
+          [actors.MessageToText.Type.TEXT]: {
+            actions: [
+              actions.log((_, e) => `Got text from MessageToText: ${e.payload.text}`),
+            ],
+            target: duckula.State.CoffeeRequesting,
+          },
         },
       },
-      [duckula.State.CoffeeRequested]: {
+      [duckula.State.CoffeeRequesting]: {
+        entry: [
+          actions.send(duckula.Event.REPLY('Do you wanna grab coffee some day?')),
+        ],
         // wait for WAITINGTIME
         // if no response, move to failure
         // else if request is rejected, move to failure
         // otherwise, move to success
         after: {
-          6000: duckula.State.Failure,
+          6000: {
+            actions: [
+              actions.log('No response to coffee request'),
+              actions.send(duckula.Event.REJECT()),
+            ],
+          },
         },
         on: {
+          [duckula.Type.MESSAGE]: {
+            actions: [
+              actions.assign({
+                message: (_, e) => e.payload.message,
+              }),
+              actions.send(
+                (_, e) => e,
+                { to: actors.MessageToText.id },
+              ),
+            ],
+          },
+          [actors.MessageToText.Type.TEXT]: {
+            actions: [
+              actions.log((_, e) => `Got text from MessageToText: ${e.payload.text}`),
+              actions.send(duckula.Event.ACCEPT()),
+            ],
+          },
           [duckula.Type.REJECT]: { target: duckula.State.Failure },
           [duckula.Type.ACCEPT]: { target: duckula.State.Success },
         },
       },
-      [duckula.State.Success]: { type: 'final' },
-      [duckula.State.Failure]: {},
-    },
-  },
-  {
-    actions: {
-      // action implementations
-      sendFirstPitch: (_context, _event) => {
-        console.info('Hi, my name is Xer. How are you?')
+      [duckula.State.Success]: {
+        entry: [
+          actions.send(duckula.Event.REPLY('Great, I feel some chemistry between us!')),
+        ],
+        type: 'final',
       },
-      sendSecondPitch: (_context, _event) => {
-        console.info('How is your day?')
-      },
-      requestCoffeeMeet: (_context, _event) => {
-        console.info('Do you wanna grab coffee some day?')
+      [duckula.State.Failure]: {
+        entry: [
+          actions.send(duckula.Event.REPLY('Sorry, I think we are done.')),
+        ],
       },
     },
   },
