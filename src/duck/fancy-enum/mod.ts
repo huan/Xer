@@ -22,6 +22,6 @@
  *
  *  @link https://twitter.com/huan_us/status/1511260462544998404
  */
-export { Event }    from './fancy-enum-events.js'
-export { State }    from './fancy-enum-states.js'
-export { Type }     from './fancy-enum-types.js'
+export { Event }    from './event.js'
+export { State }    from './state.js'
+export { Type }     from './type.js'

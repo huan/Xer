@@ -1,5 +1,5 @@
 /* eslint-disable no-redeclare */
-import * as events from './events.js'
+import * as events from '../events.js'
 
 /**
  * Huan(202204): We are using a "Fancy Enum" instead of a TypeScript native `enum` at here,

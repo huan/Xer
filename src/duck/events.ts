@@ -141,3 +141,7 @@ export const NO_DATE  = createAction(Type.NO_DATE)()
 
 export const MEMBERS    = createAction(Type.MEMBERS, payloadContacts)()
 export const NO_MEMBER  = createAction(Type.NO_MEMBER)()
+
+export const REPLY   = createAction(Type.REPLY)()
+export const ACCEPT  = createAction(Type.ACCEPT)()
+export const REJECT  = createAction(Type.REJECT)()

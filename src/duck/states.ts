@@ -16,53 +16,33 @@
  *   limitations under the License.
  *
  */
-export const Unknown = 'xer/Unknown'
 
-export const Listening   = 'xer/Listening'
-export const Thinking    = 'xer/Thinking'
-export const Feedbacking = 'xer/Feedbacking'
-export const Feedbacked  = 'xer/Feedbacked'
-export const Checking    = 'xer/Checking'
-export const Validating  = 'xer/Validating'
+/**
+ * System States
+ */
+export const Idle         = 'sys/Idle'
+export const Responding   = 'sys/Responding'
+export const Erroring     = 'sys/Erroring'
 
-export const Active = 'xer/Active'
-export const Inactive = 'xer/Inactive'
+export const Messaging    = 'sys/Messaging'
+export const Initializing = 'sys/Initializing'
+export const Filing       = 'sys/Filing'
+export const Recognizing  = 'sys/Recognizing'
+export const Recognized   = 'sys/Recognized'
+export const Classifying  = 'sys/Classifying'
+export const Textualized  = 'sys/Textualized'
 
-export const Recognizing  = 'xer/Recognizing'
-export const Recognized   = 'xer/Recognized'
+/**
+ * Xer (Domain) States
+ */
+export const Stranger   = 'xer/Stranger'
+export const Matched    = 'xer/Matched'
 
-export const Classifying  = 'bot5-assisstant/Classifying'
-export const Classified   = 'xer/Classified'
+export const FirstPitched     = 'xer/FirstPitched'
+export const SecondPitched    = 'xer/SecondPitched'
+export const ThirdPitched     = 'xer/ThirdPitched'
 
-export const Processing = 'xer/Processing'
-export const Delivering = 'xer/Delivering'
+export const CoffeeRequested  = 'xer/CoffeeRequested'
 
-export const Mentioning   = 'xer/Mentioning'
-export const Registering  = 'xer/Registering'
-export const Registered   = 'xer/Registered'
-
-export const Saying         = 'xer/Saying'
-export const Updating       = 'xer/Updating'
-export const Confirming     = 'xer/Confirming'
-
-export const Understanding  = 'xer/Understanding'
-export const Understood     = 'xer/Understood'
-
-export const Introducing  = 'xer/Introducing'
-export const Selecting    = 'xer/Selecting'
-export const Scheduling   = 'xer/Scheduling'
-export const Noticing     = 'xer/Noticing'
-export const Reporting    = 'xer/Reporting'
-export const Parsing      = 'xer/Parsing'
-
-export const Loading      = 'xer/Loading'
-export const Loaded      = 'xer/Loaded'
-
-export const Messaging    = 'xer/Messaging'
-export const Filing       = 'xer/Filing'
-
-export const Textualizing = 'xer/Textualizing'
-export const Textualized  = 'xer/Textualized'
-
-export const Nexting      = 'xer/Nexting'
-export const Batching     = 'xer/Batching'
+export const Success  = 'xer/Success'
+export const Failure  = 'xer/Failure'

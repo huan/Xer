@@ -16,6 +16,10 @@
  *   limitations under the License.
  *
  */
+export const REPLY = 'xer/REPLY'
+export const REJECT = 'xer/REJECT'
+export const ACCEPT = 'xer/ACCEPT'
+
 export const MESSAGE = 'xer/MESSAGE'
 
 export const ROOM = 'xer/ROOM'
