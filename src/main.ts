@@ -32,17 +32,23 @@ import * as DatingPitchesActor        from './conversational-state-machine/mod.j
 import { skipSelfMessagePayload$ }    from './pure-functions/skip-self-message-payload$.js'
 
 async function main () {
+  /**
+   * Wechaty Actor
+   */
   const wechaty = WechatyBuilder.build()
-
-  wechaty.on('message', msg => console.info('DEBUG [Wechaty]', String(msg)))
-
   const bus$ = CQRS.from(wechaty)
-  const wechatyMailbox = WechatyActor.from(bus$, wechaty.puppet.id)
-  wechatyMailbox.open()
+  const wechatyActor = WechatyActor.from(bus$, wechaty.puppet.id)
+  wechatyActor.open()
 
+  /**
+   * Dating Pitches Actor
+   */
   const datingPitchesMailbox = Mailbox.from(
     DatingPitchesActor.machine.withContext({
       ...DatingPitchesActor.initialContext(),
+      actors: {
+        wechaty: String(wechatyActor.address),
+      },
     }),
   )
   datingPitchesMailbox.open()
@@ -57,6 +63,9 @@ async function main () {
     },
   })
 
+  /**
+   * Main Machine Interpreter
+   */
   const mainInterpreter = interpret(mainMachine)
   mainInterpreter
     .onEvent(e => console.info('mainInterpreter.onEvent()', e))
@@ -68,6 +77,11 @@ async function main () {
     console.info('### DatingPitchesActor.Event.MESSAGE', e)
     mainInterpreter.send(e)
   })
+
+  /**
+   * Start Wechaty
+   */
+  wechaty.on('message', msg => console.info('DEBUG [Wechaty]', String(msg)))
 
   const future = new Promise<void>(resolve => wechaty.on('stop', resolve))
   await wechaty.start()
