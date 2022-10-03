@@ -16,93 +16,62 @@
  *   limitations under the License.
  *
  */
-/* eslint-disable sort-keys */
+import { WechatyBuilder }   from 'wechaty'
+import * as CQRS            from 'wechaty-cqrs'
+import * as WechatyActor    from 'wechaty-actor'
+
 import {
   createMachine,
   interpret,
-}                   from 'xstate'
+}                           from 'xstate'
+import * as Mailbox         from 'mailbox'
 
-import duckula from './conversational-state-machine/duckula.js'
+import { map } from 'rxjs/operators'
 
-const datingPitchesMachine = createMachine(
-  {
-    id: duckula.id,
-    context: duckula.initialContext,
-    initial: duckula.State.Matched,
-    states: {
-      [duckula.State.Matched]: {
-        // once matched, send out the first pitch immediately, move to firstPitched state
-        always:[ { target: duckula.State.FirstPitched } ],
-        entry: [ 'sendFirstPitch' ],
-      },
-      [duckula.State.FirstPitched]: {
-        // wait for WAITINGTIME
-        // if no response, move to failure
-        // otherwise, send the second message and move to secondPitched state
-        after: {
-          6000: duckula.State.Failure,
-        },
-        on: {
-          REPLY: {
-            actions: [ 'sendSecondPitch' ],
-            target: duckula.State.SecondPitched,
-          },
-        },
-      },
-      [duckula.State.SecondPitched]: {
-        // wait for WAITINGTIME
-        // if no response, move to failure
-        // otherwise, send coffee meet request and move to coffeeRequested state
-        after: {
-          6000: duckula.State.Failure,
-        },
-        on: {
-          REPLY: { target: duckula.State.CoffeeRequested, actions: [ 'requestCoffeeMeet' ] },
-        },
-      },
-      [duckula.State.CoffeeRequested]: {
-        // wait for WAITINGTIME
-        // if no response, move to failure
-        // else if request is rejected, move to failure
-        // otherwise, move to success
-        after: {
-          6000: duckula.State.Failure,
-        },
-        on: {
-          REJECT: { target: duckula.State.Failure },
-          ACCEPT: { target: duckula.State.Success },
-        },
-      },
-      [duckula.State.Success]: { type: 'final' },
-      [duckula.State.Failure]: {},
-    },
-  },
-  {
-    actions: {
-      // action implementations
-      sendFirstPitch: (_context, _event) => {
-        console.info('Hi, my name is Xer. How are you?')
-      },
-      sendSecondPitch: (_context, _event) => {
-        console.info('How is your day?')
-      },
-      requestCoffeeMeet: (_context, _event) => {
-        console.info('Do you wanna grab coffee some day?')
+import * as DatingPitchesActor        from './conversational-state-machine/mod.js'
+import { skipSelfMessagePayload$ }    from './pure-functions/skip-self-message-payload$.js'
+
+async function main () {
+  const wechaty = WechatyBuilder.build()
+
+  wechaty.on('message', msg => console.info('DEBUG [Wechaty]', String(msg)))
+
+  const bus$ = CQRS.from(wechaty)
+  const wechatyMailbox = WechatyActor.from(bus$, wechaty.puppet.id)
+  wechatyMailbox.open()
+
+  const datingPitchesMailbox = Mailbox.from(
+    DatingPitchesActor.machine.withContext({
+      ...DatingPitchesActor.initialContext(),
+    }),
+  )
+  datingPitchesMailbox.open()
+
+  const MAIN_MACHINE_ID = 'MainMachine'
+  const mainMachine = createMachine({
+    id: MAIN_MACHINE_ID,
+    on: {
+      '*': {
+        actions: Mailbox.actions.proxy(MAIN_MACHINE_ID)(datingPitchesMailbox),
       },
     },
-  },
-)
+  })
 
-const datingPitchesService = interpret(datingPitchesMachine).onTransition((state) =>
-  console.info('Current state <%s>', state.value),
-)
+  const mainInterpreter = interpret(mainMachine)
+  mainInterpreter
+    .onEvent(e => console.info('mainInterpreter.onEvent()', e))
+    .start()
 
-// Start the service
-datingPitchesService.start()
-// => 'matched'
+  skipSelfMessagePayload$(bus$)(wechaty.puppet.id).pipe(
+    map(messagePayload => DatingPitchesActor.Event.MESSAGE(messagePayload)),
+  ).subscribe(e => {
+    console.info('### DatingPitchesActor.Event.MESSAGE', e)
+    mainInterpreter.send(e)
+  })
 
-datingPitchesService.send({ type: 'REPLY' })
+  const future = new Promise<void>(resolve => wechaty.on('stop', resolve))
+  await wechaty.start()
+  await future
+}
 
-datingPitchesService.send({ type: 'REPLY' })
-
-datingPitchesService.send({ type: 'ACCEPT' })
+await main()
