@@ -6,3 +6,6 @@ dist
 
 package-lock.json
 yarn.lock
+
+t/
+t.*
