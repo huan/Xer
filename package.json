@@ -1,6 +1,6 @@
 {
   "name": "xer",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "A dating bot target for getting more conversions from online dating apps",
   "main": "dist/index.js",
   "type": "module",
