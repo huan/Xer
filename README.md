@@ -1,4 +1,4 @@
-# Xer [![Powered by Wechaty](https://img.shields.io/badge/Powered%20By-Wechaty-brightgreen.svg)](https://wechaty.js.org)
+# Xer [![Powered by Wechaty](https://img.shields.io/badge/Powered%20By-Wechaty-brightgreen.svg)](https://wechaty.js.org) [![Node.js CI](https://github.com/xjiang67/Xer/actions/workflows/node.js.yml/badge.svg)](https://github.com/xjiang67/Xer/actions/workflows/node.js.yml)
 
 Xer is a dating bot target for getting more conversions from online dating apps
 
