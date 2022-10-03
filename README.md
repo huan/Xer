@@ -40,4 +40,4 @@ npm test
 ## Authors
 
 - Xuan Jiang - Initial work - @[xjiang67](https://github.com/xjiang67)
-- Huan LI - Initial work - @[huan](https://github.com/huan)
+- Huan Li - Initial work - @[huan](https://github.com/huan)
