@@ -2,6 +2,13 @@
 
 Xer is a dating bot target for getting more conversions from online dating apps
 
+## Usage
+
+The Conversational State Machine is at: <https://github.com/xjiang67/Xer/blob/main/src/conversational-state-machine/machine.ts>
+
+1. Start from this file and keep all logics inside it.
+1. Other files are library.
+
 ## Architecture
 
 Xer is a conversational application built on [Wechaty](https://github.com/wechaty/wechaty). It uses the following design patterns:
