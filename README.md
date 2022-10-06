@@ -31,6 +31,12 @@ npm install
 npm start
 ```
 
+If you want to run Xer with WhatsApp, you need to set the environment variable `WECHATY_PUPPET` to `wechaty-puppet-whatsapp`.
+
+```sh
+WECHATY_PUPPET=wechaty-puppet-whatsapp npm start
+```
+
 ## Tests
 
 ```bash
