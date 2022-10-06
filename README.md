@@ -19,6 +19,11 @@ Xer is a conversational application built on [Wechaty](https://github.com/wechat
 - [Command Query Responsibility Segregation (CQRS)](https://www.sderosiaux.com/articles/2019/08/29/cqrs-why-and-all-the-things-to-consider/)
 - [Actor Model](https://en.wikipedia.org/wiki/Actor_model)
 
+## Requirements
+
+- [Node.js](https://nodejs.org/en/) v16+
+- [NPM](https://www.npm.com/) v8+
+
 ## Installation
 
 ```bash
