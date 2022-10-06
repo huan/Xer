@@ -2,12 +2,12 @@
 
 Xer is a dating bot target for getting more conversions from online dating apps
 
-## Usage
+## Development
 
 The Conversational State Machine is at: <https://github.com/xjiang67/Xer/blob/main/src/conversational-state-machine/machine.ts>
 
 1. Start from this file and keep all logics inside it.
-1. Other files are library.
+1. Other files should be all treat as **Library**.
 
 ## Architecture
 
