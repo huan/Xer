@@ -24,7 +24,7 @@ Xer is a conversational application built on [Wechaty](https://github.com/wechat
 - [Node.js](https://nodejs.org/en/) v16+
 - [NPM](https://www.npm.com/) v8+
 
-[NVM](https://nvm.sh/) is recommended to install and manage the versions of Node.js and NPM.
+[NVM (Node Version Manager)](https://nvm.sh/) is recommended to install and manage the versions of Node.js and NPM.
 
 ## Installation
 
