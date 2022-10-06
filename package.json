@@ -62,7 +62,7 @@
   },
   "scripts": {
     "build": "tsc",
-    "clean": "shx rm -fr dist/*",
+    "clean": "shx rm -fr dist/* .wwebjs_auth/",
     "dev": "tsc -W",
     "dist": "npm-run-all clean build",
     "lint": "npm-run-all lint:es lint:ts lint:md",
