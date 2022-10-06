@@ -17,6 +17,7 @@ export const skipSelfMessagePayload$ = (bus$: CQRS.Bus) => (puppetId: string) =>
       mergeMap(CQRS.execute$(bus$)),
       map(response => response.payload.message),
       filter(isDefined),
+      // tap(message => console.info('skipSelfMessagePayload$() message.talkerId: %s, currentUserId: %s', message.talkerId, currentUserId)),
       filter(message => message.talkerId !== currentUserId),
     )),
   )
